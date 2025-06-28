@@ -1,4 +1,4 @@
-import ShipmentsPage from "@/features/shipments/ShipmentsPage";
+import ShipmentsPage from "@/features/shipments/components/ShipmentsPage";
 import React from "react";
 
 const Page = () => {

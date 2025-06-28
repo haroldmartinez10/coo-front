@@ -1,4 +1,4 @@
-import ShipmentsDetail from "@/features/shipments/ShipmentsDetail";
+import ShipmentsDetail from "@/features/shipments/components/ShipmentsDetail";
 import React from "react";
 
 const Page = () => {

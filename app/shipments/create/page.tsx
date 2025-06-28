@@ -1,4 +1,4 @@
-import ShipmentsCreate from "@/features/shipments/create/ShipmentsCreate";
+import ShipmentsCreate from "@/features/shipments/create/components/ShipmentsCreate";
 import React from "react";
 
 const Page = () => {
