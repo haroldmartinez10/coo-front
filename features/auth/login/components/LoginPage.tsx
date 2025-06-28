@@ -90,7 +90,14 @@ const LoginPage = () => {
             validationSchema={LoginSchema}
             onSubmit={handleSubmit}
           >
-            {({ values, errors, touched, handleChange, handleBlur }) => (
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              isSubmitting,
+            }) => (
               <Form style={{ width: "100%" }}>
                 <Field
                   as={TextField}
@@ -156,6 +163,7 @@ const LoginPage = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
+                  disabled={isSubmitting}
                   sx={{
                     mt: 2,
                     mb: 2,
@@ -164,7 +172,7 @@ const LoginPage = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  Iniciar Sesión
+                  {isSubmitting ? "Ingresando..." : "Iniciar Sesión"}
                 </Button>
               </Form>
             )}

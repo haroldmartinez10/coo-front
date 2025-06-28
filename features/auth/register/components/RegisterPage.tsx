@@ -96,7 +96,14 @@ const RegisterPage = () => {
             validationSchema={RegisterSchema}
             onSubmit={handleSubmit}
           >
-            {({ values, errors, touched, handleChange, handleBlur }) => (
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              isSubmitting,
+            }) => (
               <Form style={{ width: "100%" }}>
                 <Field
                   as={TextField}
@@ -178,6 +185,7 @@ const RegisterPage = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
+                  disabled={isSubmitting}
                   sx={{
                     mt: 2,
                     mb: 2,
@@ -186,7 +194,7 @@ const RegisterPage = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  Crear Cuenta
+                  {isSubmitting ? "Creando cuenta..." : "Crear Cuenta"}
                 </Button>
               </Form>
             )}
