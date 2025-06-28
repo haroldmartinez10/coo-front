@@ -15,6 +15,8 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoginFormValues } from "@/features/auth/login/types/LoginType";
 import { LoginSchema } from "@/features/auth/login/schemas/LoginSchema";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,8 +26,21 @@ const LoginPage = () => {
     password: "",
   };
 
-  const handleSubmit = (values: LoginFormValues, { setSubmitting }: any) => {
-    console.log(values);
+  const router = useRouter();
+  const handleSubmit = async (values: LoginFormValues) => {
+    try {
+      const response = await signIn("credentials", {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      if (response?.ok) {
+        router.refresh();
+      }
+    } catch (error) {
+      error;
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -70,7 +85,7 @@ const LoginPage = () => {
               values,
               errors,
               touched,
-              isSubmitting,
+
               handleChange,
               handleBlur,
             }) => (
@@ -128,7 +143,6 @@ const LoginPage = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  disabled={isSubmitting}
                   sx={{
                     mt: 2,
 
@@ -138,7 +152,7 @@ const LoginPage = () => {
                     fontWeight: "bold",
                   }}
                 >
-                  {isSubmitting ? "Iniciando sesión..." : "Iniciar Sesión"}
+                  Iniciar Sesión
                 </Button>
               </Form>
             )}
