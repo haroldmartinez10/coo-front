@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { authServices } from "./features/auth/login/services/authServices";
+import { loginService } from "@/features/auth/login/services/loginService";
 
 declare module "next-auth" {
   interface Session {
@@ -35,7 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const response = await authServices.login(
+          const response = await loginService(
             credentials.email as string,
             credentials.password as string
           );

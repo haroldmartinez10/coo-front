@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   const initialValues: LoginFormValues = {
     email: "",
@@ -27,6 +28,7 @@ const LoginPage = () => {
   };
 
   const router = useRouter();
+
   const handleSubmit = async (values: LoginFormValues) => {
     try {
       const response = await signIn("credentials", {
@@ -35,11 +37,18 @@ const LoginPage = () => {
         redirect: false,
       });
 
+      console.log(response);
+
       if (response?.ok) {
+        setLoginError("");
         router.refresh();
       }
+
+      if (response?.error) {
+        setLoginError("Credenciales incorrectas");
+      }
     } catch (error) {
-      error;
+      setLoginError("Ocurrió un error inesperado");
     }
   };
 
@@ -72,8 +81,8 @@ const LoginPage = () => {
             <Image src="/coo-logo.svg" alt="logo" width={150} height={150} />
           </Box>
 
-          <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
-            Iniciar Sesión
+          <Typography component="h1" variant="h6" sx={{ mb: 3 }}>
+            Iniciar sesión
           </Typography>
 
           <Formik
@@ -81,14 +90,7 @@ const LoginPage = () => {
             validationSchema={LoginSchema}
             onSubmit={handleSubmit}
           >
-            {({
-              values,
-              errors,
-              touched,
-
-              handleChange,
-              handleBlur,
-            }) => (
+            {({ values, errors, touched, handleChange, handleBlur }) => (
               <Form style={{ width: "100%" }}>
                 <Field
                   as={TextField}
@@ -139,13 +141,23 @@ const LoginPage = () => {
                   sx={{ mb: 3 }}
                 />
 
+                {/* Mensaje de error de login */}
+                {loginError && (
+                  <Typography
+                    color="error"
+                    variant="body2"
+                    sx={{ mt: 1, mb: 1, textAlign: "center" }}
+                  >
+                    {loginError}
+                  </Typography>
+                )}
+
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
                   sx={{
                     mt: 2,
-
                     mb: 2,
                     py: 1.5,
                     fontSize: "0.9rem",
@@ -162,6 +174,7 @@ const LoginPage = () => {
             <Typography variant="body2" color="text.secondary">
               ¿No tienes una cuenta?{" "}
               <Button
+                onClick={() => router.push("/register")}
                 variant="text"
                 size="small"
                 sx={{ textTransform: "none", fontWeight: "bold" }}

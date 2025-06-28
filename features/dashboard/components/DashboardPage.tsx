@@ -12,7 +12,6 @@ const DashboardPage = () => {
   const state = useAppSelector((state) => state.auth);
 
   console.log(state);
-
   return (
     <Button variant="contained" color="primary" onClick={handleSignOut}>
       Log Out
