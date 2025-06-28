@@ -12,7 +12,6 @@ interface IAuthProviderProps {
 }
 
 export const AuthProvider = ({ session, children }: IAuthProviderProps) => {
-  console.log(session?.accessToken);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
