@@ -3,30 +3,14 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ReactNode } from "react";
+import { THEME_COLORS, THEME_CONFIG } from "@/shared/constants/theme";
 
 const theme = createTheme({
   palette: {
     mode: "light",
-    primary: {
-      main: "#115293",
-    },
-    secondary: {
-      main: "#115293",
-    },
+    ...THEME_COLORS,
   },
-  typography: {
-    fontFamily: "inherit",
-  },
-  components: {
-    MuiContainer: {
-      styleOverrides: {
-        root: {
-          paddingLeft: "16px",
-          paddingRight: "16px",
-        },
-      },
-    },
-  },
+  ...THEME_CONFIG,
 });
 
 interface ProvidersProps {

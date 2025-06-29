@@ -31,6 +31,8 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
+        cz-shortcut-listen="true"
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
