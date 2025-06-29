@@ -26,7 +26,7 @@ export const THEME_CONFIG = {
 export const TOOLPAD_THEME_CONFIG = {
   colorSchemes: { light: true, dark: true },
   cssVariables: {
-    colorSchemeSelector: "class",
+    colorSchemeSelector: "data-toolpad-color-scheme",
   },
   ...THEME_CONFIG,
   breakpoints: {

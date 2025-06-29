@@ -29,7 +29,7 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en">
+    <html lang="en" data-toolpad-color-scheme="light">
       <body
         cz-shortcut-listen="true"
         suppressHydrationWarning
