@@ -15,10 +15,6 @@ axiosInstance.interceptors.request.use(
     const authStore = store.getState().auth;
     const token = authStore.token;
 
-    if (!token) {
-      return Promise.reject(new Error("No authorization token available"));
-    }
-
     config.headers.Authorization = `Bearer ${token}`;
 
     return config;

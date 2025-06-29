@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { createTheme, styled } from "@mui/material/styles";
+import { Button } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -11,8 +12,10 @@ import { AppProvider, Navigation, Router } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { usePathname, useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { TOOLPAD_THEME_CONFIG } from "@/shared/constants/theme";
+import { useAppSelector } from "@/shared/hooks/reduxHooks";
 
 const NAVIGATION: Navigation = [
   {
@@ -20,8 +23,8 @@ const NAVIGATION: Navigation = [
     title: "Main items",
   },
   {
-    segment: "dashboard",
-    title: "Dashboard",
+    segment: "quotes",
+    title: "Cotización",
     icon: <DashboardIcon />,
   },
   {
@@ -79,11 +82,6 @@ function useNextRouter(): Router {
   return nextRouter;
 }
 
-const BRANDING = {
-  logo: <Image src="/coo-logo.svg" alt="COO Logo" width={150} height={150} />,
-  title: "",
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -91,15 +89,37 @@ export default function RootLayout({
 }) {
   const router = useNextRouter();
 
+  const handleSignOut = async () => {
+    await signOut({
+      callbackUrl: "/login",
+    });
+  };
+
+  const BRANDING = {
+    logo: <Image src="/coo-logo.svg" alt="COO Logo" width={150} height={150} />,
+    title: "",
+  };
+
+  const AUTHENTICATION = {
+    signIn: () => {},
+    signOut: handleSignOut,
+  };
+
+  const user = useAppSelector((state) => {
+    return state.auth.user?.name;
+  });
+
   return (
     <AppProvider
       navigation={NAVIGATION}
       router={router}
       theme={demoTheme}
       branding={BRANDING}
+      authentication={AUTHENTICATION}
+      session={{ user: { name: user || "" } }}
     >
       <DashboardLayout>
-        <PageContainer>{children}</PageContainer>
+        <div className="p-4">{children}</div>
       </DashboardLayout>
     </AppProvider>
   );

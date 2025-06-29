@@ -41,7 +41,7 @@ export default async function middleware(request: NextRequest) {
 
   if (isAuthRoute) {
     if (session) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/quotes", request.url));
     }
 
     return NextResponse.next();
