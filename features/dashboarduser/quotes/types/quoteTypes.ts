@@ -35,10 +35,7 @@ export type QuoteResponseCreate = {
         length: number;
       };
     };
-    pricing: {
-      basePrice: number;
-      pricePerKg: number;
-      totalPrice: number;
-    };
+    price: number;
+    currency: string;
   };
 };

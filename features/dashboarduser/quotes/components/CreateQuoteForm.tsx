@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import {
-  Box,
   Container,
   Paper,
   TextField,
@@ -17,8 +16,9 @@ import {
   FormHelperText,
 } from "@mui/material";
 import { useCreateQuote } from "../mutations/useCreateQuote";
-import { QuoteBody } from "../types/quotesTypes";
+import { QuoteBody } from "../types/quoteTypes";
 import { QuoteSchema } from "../schemas/QuoteSchema";
+import { ErrorResponse } from "@/shared/types/ErrorResponse";
 
 const CITIES = ["Bogotá", "Medellín", "Cali", "Barranquilla"];
 
@@ -47,7 +47,9 @@ const CitySelect = ({ name, label }: { name: string; label: string }) => (
 );
 
 const CreateQuoteForm = () => {
+  const [quoteCurrentPrice, setQuoteCurrentPrice] = useState(0);
   const { createQuoteAsync, isPending } = useCreateQuote();
+
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
 
@@ -60,16 +62,20 @@ const CreateQuoteForm = () => {
     length: 0,
   };
 
-  const handleSubmit = async (values: QuoteBody, { resetForm }: any) => {
+  const handleCreateOrder = async (values: QuoteBody) => {};
+
+  const handleSubmit = async (values: QuoteBody) => {
     try {
       setSubmitError("");
       setSubmitSuccess("");
-      await createQuoteAsync({ body: values });
+      const response = await createQuoteAsync({ body: values });
+
+      setQuoteCurrentPrice(response.quote.price);
       setSubmitSuccess("¡Cotización creada exitosamente!");
-      resetForm();
-    } catch (error: any) {
+    } catch (error) {
+      const errorResponse = error as ErrorResponse;
       setSubmitError(
-        error?.response?.data?.message ||
+        errorResponse?.response?.data?.message ||
           "Ocurrió un error al crear la cotización"
       );
     }

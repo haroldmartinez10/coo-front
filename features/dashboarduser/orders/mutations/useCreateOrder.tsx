@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { MutationOptions } from "@/shared/types/mutationTypes";
-import quotesService from "@/features/dashboarduser/quotes/services/quoteServices";
-import { QuoteBody } from "@/features/dashboarduser/quotes/types/quoteTypes";
 
-export const useCreateQuote = ({
+import { QuoteBody } from "@/features/dashboarduser/quotes/types/quoteTypes";
+import quotesService from "../../quotes/services/quoteServices";
+
+export const useCreateOrder = ({
   onSuccess,
   onError,
 }: MutationOptions = {}) => {

@@ -3,7 +3,7 @@ import {
   QuoteBody,
   QuoteResponse,
   QuoteResponseCreate,
-} from "@/features/dashboarduser/quotes/types/quotesTypes";
+} from "@/features/dashboarduser/quotes/types/quoteTypes";
 
 const quotesService = {
   getQuotes: async (): Promise<QuoteResponse> => {

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import quotesService from "../services/quotesService";
-import QUOTES_QUERY_KEYS from "@/features/dashboarduser/quotes/constants/quotesQueryKeys";
+import quotesService from "../services/quoteServices";
+import QUOTES_QUERY_KEYS from "@/features/dashboarduser/quotes/constants/quoteQueryKeys";
 
 const useGetQuotes = () => {
   return useQuery({
