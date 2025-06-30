@@ -24,6 +24,7 @@ const CreateQuoteForm = () => {
   const [quoteCurrentPrice, setQuoteCurrentPrice] = useState(0);
 
   const [isOrderCreated, setIsOrderCreated] = useState(false);
+  const [orderId, setOrderId] = useState(0);
   const { createQuoteAsync, isPending } = useCreateQuote();
   const { createOrderAsync, isPending: isPendingCreateOrder } =
     useCreateOrder();
@@ -57,6 +58,7 @@ const CreateQuoteForm = () => {
 
       if (response) {
         setSubmitSuccess("¡Orden creada exitosamente!");
+        setOrderId(response?.data.id);
         setIsOrderCreated(true);
       }
     } catch (error) {
@@ -77,7 +79,7 @@ const CreateQuoteForm = () => {
   const handleSubmit = async (values: QuoteBody) => {
     if (isOrderCreated) {
       console.log("hello world");
-      router.push(`/orders`);
+      router.push(`/orders/${orderId}`);
       return;
     }
 
