@@ -29,9 +29,7 @@ const orderServices = {
     id: string,
     body: OrderStatusHistoryBody
   ): Promise<OrderStatusHistoryResponse> => {
-    const response = await axiosInstance.put(`/orders/${id}/status`, {
-      body,
-    });
+    const response = await axiosInstance.put(`/orders/${id}/status`, body);
     return response.data;
   },
 

@@ -68,7 +68,7 @@ export type StatusConfig = {
 };
 
 export type OrderStatusHistoryBody = {
-  status: OrderStatus;
+  newStatus: OrderStatus;
   notes: string;
 };
 

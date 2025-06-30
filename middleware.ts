@@ -39,9 +39,15 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (isAuthRoute) {
-    if (session) {
-      return NextResponse.redirect(new URL("/quotes", request.url));
+  if (isAuthRoute && session) {
+    const roleRedirectMap: Record<string, string> = {
+      admin: "/orders",
+      user: "/quotes",
+    };
+
+    const redirectPath = roleRedirectMap[session.user.role];
+    if (redirectPath) {
+      return NextResponse.redirect(new URL(redirectPath, request.url));
     }
 
     return NextResponse.next();

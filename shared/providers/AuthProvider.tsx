@@ -19,7 +19,11 @@ export const AuthProvider = ({ session, children }: IAuthProviderProps) => {
       dispatch(
         login({
           token: session?.accessToken,
-          user: { email: session.user.email, name: session.user.name },
+          user: {
+            email: session.user.email,
+            name: session.user.name,
+            role: session.user.role,
+          },
         })
       );
     } else {

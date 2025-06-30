@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Box,
   TextField,
@@ -8,68 +8,107 @@ import {
   Chip,
   CircularProgress,
   Alert,
-  Grid,
   Stepper,
   Step,
   StepLabel,
   StepContent,
   Paper,
 } from "@mui/material";
-import useGetOrderTracking from "../../orders/queries/useGetOrderTracking";
-import { OrderStatus } from "../../orders/types/orderTypes";
+import useGetOrderTracking from "@/features/dashboarduser/orders/queries/useGetOrderTracking";
+import {
+  OrderStatusHistory,
+  OrderTrackingResponse,
+} from "@/features/dashboarduser/orders/types/orderTypes";
 
 const StateOfOrder = () => {
   const [trackingCode, setTrackingCode] = useState<string>("");
-  const { data, isLoading, error } = useGetOrderTracking(trackingCode);
+  const [searchAttempted, setSearchAttempted] = useState<boolean>(false);
+  const [displayData, setDisplayData] = useState<OrderTrackingResponse | null>(
+    null
+  );
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "warning";
-      case "in_transit":
-        return "info";
-      case "delivered":
-        return "success";
-      default:
-        return "default";
+  const isValidCode = useMemo(
+    () => trackingCode.trim().length >= 10,
+    [trackingCode]
+  );
+  const { data, isLoading, error } = useGetOrderTracking(
+    isValidCode ? trackingCode.trim() : ""
+  );
+
+  const statusConfig: Record<
+    string,
+    {
+      text: string;
+      color: "warning" | "info" | "success";
+      step: number;
+      desc: string;
+    }
+  > = {
+    pending: {
+      text: "Pendiente",
+      color: "warning",
+      step: 0,
+      desc: "La orden ha sido recibida y está siendo procesada",
+    },
+    in_transit: {
+      text: "En tránsito",
+      color: "info",
+      step: 1,
+      desc: "El paquete está en camino hacia su destino",
+    },
+    delivered: {
+      text: "Entregado",
+      color: "success",
+      step: 2,
+      desc: "El paquete ha sido entregado exitosamente",
+    },
+  };
+
+  const handleChange = (value: string) => {
+    setTrackingCode(value);
+    if (value.trim().length === 0) {
+      setDisplayData(null);
+      setSearchAttempted(false);
+    } else if (value.trim().length >= 10) {
+      setSearchAttempted(true);
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Pendiente";
-      case "in_transit":
-        return "En tránsito";
-      case "delivered":
-        return "Entregado";
-      default:
-        return status;
-    }
+  useEffect(() => {
+    if (error && searchAttempted && isValidCode) setDisplayData(null);
+    else if (data?.success && data.data && searchAttempted)
+      setDisplayData(data);
+  }, [data, error, searchAttempted, isValidCode]);
+
+  const shouldShow = {
+    loading: isLoading && searchAttempted && isValidCode,
+    error: error && searchAttempted && isValidCode,
+    data: displayData?.success && displayData.data && searchAttempted,
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("es-ES", {
+  const getHelperText = () => {
+    if (!trackingCode.trim())
+      return "Ingresa tu código de seguimiento para ver el estado de tu orden";
+    if (trackingCode.trim().length < 10)
+      return "El código debe tener al menos 10 caracteres (Ej: COO-20250630-NK6R30)";
+    if (shouldShow.loading) return "Buscando información de la orden...";
+    if (shouldShow.error)
+      return "Código no encontrado. Verifica que sea correcto.";
+    if (shouldShow.data) return "Información de la orden encontrada";
+    return "Código válido - Buscando...";
+  };
+
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleString("es-ES", {
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
-  const getStepIndex = (status: string) => {
-    switch (status) {
-      case "pending":
-        return 0;
-      case "in_transit":
-        return 1;
-      case "delivered":
-        return 2;
-      default:
-        return 0;
-    }
-  };
+  const currentStatus = displayData?.data?.status || "";
+  const currentConfig = statusConfig[currentStatus];
 
   return (
     <Box sx={{ p: 3 }}>
@@ -84,114 +123,144 @@ const StateOfOrder = () => {
             label="Código de seguimiento"
             placeholder="Ej: COO-20250630-NK6R30"
             value={trackingCode}
-            onChange={(e) => setTrackingCode(e.target.value.trim())}
-            variant="outlined"
-            helperText="Ingresa tu código de seguimiento para ver el estado de tu orden"
+            onChange={(e) => handleChange(e.target.value)}
+            helperText={getHelperText()}
+            error={
+              shouldShow.error ||
+              (trackingCode.trim().length > 0 &&
+                trackingCode.trim().length < 10)
+            }
+            color={
+              shouldShow.error
+                ? "error"
+                : shouldShow.data
+                  ? "success"
+                  : undefined
+            }
           />
         </CardContent>
       </Card>
 
-      {isLoading && trackingCode && (
-        <Box display="flex" justifyContent="center" alignItems="center" p={4}>
-          <CircularProgress />
-          <Typography variant="body1" sx={{ ml: 2 }}>
-            Buscando información de la orden...
-          </Typography>
-        </Box>
+      {shouldShow.loading && (
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              p={2}
+            >
+              <CircularProgress size={24} />
+              <Typography sx={{ ml: 2 }}>
+                Buscando información de la orden...
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
       )}
 
-      {error && trackingCode && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          Error al buscar la orden. Verifica que el código de seguimiento sea
-          correcto.
+      {shouldShow.error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          No se encontró ninguna orden con el código "{trackingCode.trim()}".
+          Verifica que el código sea correcto.
         </Alert>
       )}
 
-      {data?.success && data.data && (
-        <Grid spacing={3}>
-          <Grid>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Seguimiento del Envío
-                </Typography>
+      {shouldShow.data && (
+        <Card>
+          <CardContent>
+            <Box
+              sx={{
+                mb: 2,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="h6">Seguimiento del Envío</Typography>
+              <Chip
+                label={currentConfig?.text || currentStatus}
+                color={currentConfig?.color || "default"}
+                sx={{ fontWeight: "bold" }}
+              />
+            </Box>
 
-                <Stepper
-                  activeStep={getStepIndex(data.data.status)}
-                  orientation="vertical"
-                >
-                  <Step>
-                    <StepLabel>Pendiente</StepLabel>
-                    <StepContent>
-                      <Typography variant="body2">
-                        La orden ha sido recibida y está siendo procesada
-                      </Typography>
-                    </StepContent>
-                  </Step>
-                  <Step>
-                    <StepLabel>En tránsito</StepLabel>
-                    <StepContent>
-                      <Typography variant="body2">
-                        El paquete está en camino hacia su destino
-                      </Typography>
-                    </StepContent>
-                  </Step>
-                  <Step>
-                    <StepLabel>Entregado</StepLabel>
-                    <StepContent>
-                      <Typography variant="body2">
-                        El paquete ha sido entregado exitosamente
-                      </Typography>
-                    </StepContent>
-                  </Step>
-                </Stepper>
+            <Stepper
+              activeStep={currentConfig?.step || 0}
+              orientation="vertical"
+            >
+              {Object.entries(statusConfig).map(([key, config]) => (
+                <Step key={key}>
+                  <StepLabel>{config.text}</StepLabel>
+                  <StepContent>
+                    <Typography variant="body2" color="text.secondary">
+                      {config.desc}
+                    </Typography>
+                  </StepContent>
+                </Step>
+              ))}
+            </Stepper>
 
-                {data.data.statusHistory &&
-                  data.data.statusHistory.length > 0 && (
-                    <Box sx={{ mt: 3 }}>
-                      <Typography variant="h6" gutterBottom>
-                        Historial de Estados
-                      </Typography>
-                      {data.data.statusHistory
-                        .sort(
-                          (a, b) =>
-                            new Date(b.changed_at).getTime() -
-                            new Date(a.changed_at).getTime()
-                        )
-                        .map((history, index) => (
-                          <Paper key={history.id} sx={{ p: 2, mb: 1 }}>
-                            <Box
-                              display="flex"
-                              justifyContent="space-between"
-                              alignItems="center"
-                            >
-                              <Box>
-                                <Chip
-                                  label={getStatusText(history.status)}
-                                  color={getStatusColor(history.status) as any}
-                                  size="small"
-                                />
-                                {history.notes && (
-                                  <Typography variant="body2" sx={{ mt: 1 }}>
-                                    {history.notes}
-                                  </Typography>
-                                )}
-                              </Box>
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                              >
-                                {formatDate(history.changed_at)}
-                              </Typography>
+            {displayData?.data?.statusHistory &&
+              displayData.data.statusHistory.length > 0 && (
+                <Box sx={{ mt: 4 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Historial de Estados
+                  </Typography>
+                  {displayData.data.statusHistory
+                    .sort(
+                      (a: OrderStatusHistory, b: OrderStatusHistory) =>
+                        new Date(b.changed_at).getTime() -
+                        new Date(a.changed_at).getTime()
+                    )
+                    .map((history: OrderStatusHistory, index: number) => {
+                      const historyConfig = statusConfig[history.status];
+                      return (
+                        <Paper
+                          key={history.id}
+                          sx={{
+                            p: 2,
+                            mb: 1,
+                            border: index === 0 ? "2px solid" : "1px solid",
+                            borderColor:
+                              index === 0 ? "primary.main" : "divider",
+                          }}
+                        >
+                          <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Box>
+                              <Chip
+                                label={historyConfig?.text || history.status}
+                                color={historyConfig?.color || "default"}
+                                size="small"
+                                variant={index === 0 ? "filled" : "outlined"}
+                              />
+                              {history.notes && (
+                                <Typography variant="body2" sx={{ mt: 1 }}>
+                                  {history.notes}
+                                </Typography>
+                              )}
                             </Box>
-                          </Paper>
-                        ))}
-                    </Box>
-                  )}
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{
+                                fontWeight: index === 0 ? "bold" : "normal",
+                              }}
+                            >
+                              {formatDate(history.changed_at)}
+                            </Typography>
+                          </Box>
+                        </Paper>
+                      );
+                    })}
+                </Box>
+              )}
+          </CardContent>
+        </Card>
       )}
     </Box>
   );

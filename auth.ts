@@ -8,11 +8,16 @@ declare module "next-auth" {
       id: string;
       name: string;
       email: string;
+      role: string;
     };
     accessToken: string;
   }
 
   interface User {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
     accessToken: string;
   }
 }
@@ -20,6 +25,7 @@ declare module "next-auth" {
 declare module "@auth/core/jwt" {
   interface JWT {
     accessToken: string;
+    role: string;
     name?: string | null;
   }
 }
@@ -40,11 +46,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials.password as string
           );
 
-          if (!response?.token) return null;
+          if (!response?.token || !response?.user) return null;
 
           return {
+            id: response.user.id,
             email: response.user.email,
             name: response.user.name,
+            role: response.user.role,
             accessToken: response.token,
           };
         } catch (error) {
@@ -62,6 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.sub = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.role = user.role;
       }
 
       return token;
@@ -71,6 +80,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.sub!;
       session.user.email = token.email!;
       session.user.name = token.name!;
+      session.user.role = token.role!;
       session.accessToken = token.accessToken!;
       return session;
     },
