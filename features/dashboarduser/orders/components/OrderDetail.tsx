@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Container,
   Typography,
@@ -9,6 +9,7 @@ import {
   Stack,
   Box,
   Avatar,
+  IconButton,
 } from "@mui/material";
 import {
   LocalShipping,
@@ -17,6 +18,7 @@ import {
   CheckCircle,
   Pending,
   DirectionsCar,
+  ArrowBack,
 } from "@mui/icons-material";
 import useGetHistoryById from "../queries/useGetHistoryById";
 import type { OrderStatus } from "../types/orderTypes";
@@ -32,6 +34,7 @@ const statusConfig: Record<
 
 const OrderDetail = () => {
   const { id } = useParams();
+  const router = useRouter();
   const { data, isLoading } = useGetHistoryById(id as string);
 
   if (isLoading || !data?.data) {
@@ -49,6 +52,21 @@ const OrderDetail = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 2, width: "100%" }}>
       <Box sx={{ mb: 4 }}>
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+          <IconButton
+            onClick={() => router.push("/orders")}
+            sx={{
+              bgcolor: "background.paper",
+              boxShadow: 1,
+              "&:hover": { bgcolor: "action.hover" },
+            }}
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="body2" color="text.secondary">
+            Volver a órdenes
+          </Typography>
+        </Stack>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Orden #{order.id}
         </Typography>
