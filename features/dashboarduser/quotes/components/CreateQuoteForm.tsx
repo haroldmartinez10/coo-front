@@ -9,11 +9,6 @@ import {
   Typography,
   Alert,
   Stack,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  FormHelperText,
 } from "@mui/material";
 import { useCreateQuote } from "@/features/dashboarduser/quotes/mutations/useCreateQuote";
 import { QuoteBody } from "@/features/dashboarduser/quotes/types/quoteTypes";
@@ -21,35 +16,14 @@ import { QuoteSchema } from "@/features/dashboarduser/quotes/schemas/QuoteSchema
 import { ErrorResponse } from "@/shared/types/ErrorResponse";
 import { useCreateOrder } from "@/features/dashboarduser/orders/mutations/useCreateOrder";
 import { OrderBody } from "@/features/dashboarduser/orders/types/orderTypes";
-
-const CITIES = ["Bogotá", "Medellín", "Cali", "Barranquilla"];
-
-const CitySelect = ({ name, label }: { name: string; label: string }) => (
-  <Field name={name}>
-    {({ field, meta }: any) => (
-      <FormControl
-        fullWidth
-        error={meta.touched && Boolean(meta.error)}
-        required
-      >
-        <InputLabel>{label}</InputLabel>
-        <Select {...field} label={label} value={field.value || ""}>
-          {CITIES.map((city) => (
-            <MenuItem key={city} value={city}>
-              {city}
-            </MenuItem>
-          ))}
-        </Select>
-        {meta.touched && meta.error && (
-          <FormHelperText>{meta.error}</FormHelperText>
-        )}
-      </FormControl>
-    )}
-  </Field>
-);
+import { CitySelect } from "@/features/dashboarduser/quotes/components/CitiSelect";
+import { useRouter } from "next/navigation";
 
 const CreateQuoteForm = () => {
+  const router = useRouter();
   const [quoteCurrentPrice, setQuoteCurrentPrice] = useState(0);
+
+  const [isOrderCreated, setIsOrderCreated] = useState(false);
   const { createQuoteAsync, isPending } = useCreateQuote();
   const { createOrderAsync, isPending: isPendingCreateOrder } =
     useCreateOrder();
@@ -66,10 +40,32 @@ const CreateQuoteForm = () => {
     length: 0,
   };
 
+  const formatCop = new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
   const handleCreateOrder = async (values: OrderBody) => {
-    const response = await createOrderAsync({
-      body: { ...values, basePrice: quoteCurrentPrice },
-    });
+    try {
+      setSubmitError("");
+      setSubmitSuccess("");
+      const response = await createOrderAsync({
+        body: { ...values, basePrice: quoteCurrentPrice },
+      });
+
+      if (response) {
+        setSubmitSuccess("¡Orden creada exitosamente!");
+        setIsOrderCreated(true);
+      }
+    } catch (error) {
+      const errorResponse = error as ErrorResponse;
+      setSubmitError(
+        errorResponse?.response?.data?.message ||
+          "Ocurrió un error al crear la orden"
+      );
+    }
   };
 
   const handleResetCotization = () => {
@@ -79,6 +75,12 @@ const CreateQuoteForm = () => {
   };
 
   const handleSubmit = async (values: QuoteBody) => {
+    if (isOrderCreated) {
+      console.log("hello world");
+      router.push(`/orders`);
+      return;
+    }
+
     if (quoteCurrentPrice > 0) {
       await handleCreateOrder(values as OrderBody);
       return;
@@ -89,7 +91,11 @@ const CreateQuoteForm = () => {
       const response = await createQuoteAsync({ body: values });
 
       setQuoteCurrentPrice(response?.quote?.price);
-      setSubmitSuccess("¡Cotización creada exitosamente!");
+      setSubmitSuccess(
+        `Cotización creada exitosamente por valor de ${formatCop.format(
+          response?.quote?.price
+        )} `
+      );
     } catch (error) {
       const errorResponse = error as ErrorResponse;
       setSubmitError(
@@ -99,9 +105,11 @@ const CreateQuoteForm = () => {
     }
   };
 
-  const textOfActionButton = !quoteCurrentPrice
-    ? "Crear Cotización"
-    : "Crear Orden";
+  const textOfActionButton = isOrderCreated
+    ? "IR A MI ORDEN"
+    : !quoteCurrentPrice
+      ? "Crear Cotización"
+      : `Crear Orden por ${formatCop.format(quoteCurrentPrice)}`;
 
   return (
     <Container component="main">
@@ -122,8 +130,16 @@ const CreateQuoteForm = () => {
                 spacing={2}
                 sx={{ mb: 3 }}
               >
-                <CitySelect name="originCity" label="Ciudad de Origen" />
-                <CitySelect name="destinationCity" label="Ciudad de Destino" />
+                <CitySelect
+                  name="originCity"
+                  label="Ciudad de Origen"
+                  disabled={quoteCurrentPrice > 0}
+                />
+                <CitySelect
+                  name="destinationCity"
+                  label="Ciudad de Destino"
+                  disabled={quoteCurrentPrice > 0}
+                />
               </Stack>
 
               <Field
@@ -181,10 +197,10 @@ const CreateQuoteForm = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                disabled={isSubmitting || isPending}
+                disabled={isSubmitting || isPending || isPendingCreateOrder}
                 sx={{ py: 1.5 }}
               >
-                {textOfActionButton}
+                {isPendingCreateOrder ? "Creando orden..." : textOfActionButton}
               </Button>
 
               {quoteCurrentPrice > 0 && (
