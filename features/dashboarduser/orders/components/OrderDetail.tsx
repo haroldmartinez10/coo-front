@@ -47,7 +47,7 @@ const OrderDetail = () => {
     );
   }
 
-  const { order, statusHistory } = data.data;
+  const { order, statusHistory } = data?.data;
 
   return (
     <Container maxWidth="xl" sx={{ py: 2, width: "100%" }}>
@@ -70,6 +70,7 @@ const OrderDetail = () => {
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           Orden #{order.id}
         </Typography>
+
         <Chip
           label={
             statusConfig[order.status as OrderStatus]?.text || order.status
@@ -138,8 +139,6 @@ const OrderDetail = () => {
               sx={{
                 borderRadius: 2,
                 boxShadow: 1,
-                border: index === 0 ? 2 : 1,
-                borderColor: index === 0 ? `${config.color}.main` : "divider",
               }}
             >
               <CardContent sx={{ p: 2.5 }}>

@@ -37,8 +37,6 @@ const LoginPage = () => {
         redirect: false,
       });
 
-      console.log(response);
-
       if (response?.ok) {
         setLoginError("");
         router.refresh();

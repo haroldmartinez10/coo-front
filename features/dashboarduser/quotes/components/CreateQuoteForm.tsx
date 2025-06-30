@@ -74,17 +74,19 @@ const CreateQuoteForm = () => {
     setQuoteCurrentPrice(0);
     setSubmitError("");
     setSubmitSuccess("");
+    setIsOrderCreated(false);
+    setOrderId(0);
   };
 
   const handleSubmit = async (values: QuoteBody) => {
     if (isOrderCreated) {
-      console.log("hello world");
       router.push(`/orders/${orderId}`);
       return;
     }
 
     if (quoteCurrentPrice > 0) {
       await handleCreateOrder(values as OrderBody);
+
       return;
     }
     try {

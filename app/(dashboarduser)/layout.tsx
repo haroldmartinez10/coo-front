@@ -1,16 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { createTheme, styled } from "@mui/material/styles";
-import { Button } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import DescriptionIcon from "@mui/icons-material/Description";
-import LayersIcon from "@mui/icons-material/Layers";
+
+import { Map } from "@mui/icons-material";
+
 import { AppProvider, Navigation, Router } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { PageContainer } from "@toolpad/core/PageContainer";
+
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
@@ -20,7 +20,7 @@ import { useAppSelector } from "@/shared/hooks/reduxHooks";
 const NAVIGATION: Navigation = [
   {
     kind: "header",
-    title: "Main items",
+    title: "Menu",
   },
   {
     segment: "quotes",
@@ -29,38 +29,15 @@ const NAVIGATION: Navigation = [
   },
   {
     segment: "orders",
-    title: "Orders",
+    title: "Mis órdenes",
     icon: <ShoppingCartIcon />,
     pattern: "orders{/:id}*",
   },
   {
-    kind: "divider",
-  },
-  {
-    kind: "header",
-    title: "Analytics",
-  },
-  {
-    segment: "reports",
-    title: "Reports",
-    icon: <BarChartIcon />,
-    children: [
-      {
-        segment: "sales",
-        title: "Sales",
-        icon: <DescriptionIcon />,
-      },
-      {
-        segment: "traffic",
-        title: "Traffic",
-        icon: <DescriptionIcon />,
-      },
-    ],
-  },
-  {
-    segment: "integrations",
-    title: "Integrations",
-    icon: <LayersIcon />,
+    segment: "state-of-order",
+    title: "Estado de mi orden",
+    icon: <Map />,
+    pattern: "state-of-order{/:id}*",
   },
 ];
 

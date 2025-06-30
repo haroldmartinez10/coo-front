@@ -6,10 +6,31 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Order } from "@/features/dashboarduser/orders/types/orderTypes";
+import { Button, Chip } from "@mui/material";
+import {
+  Visibility,
+  CheckCircle,
+  Pending,
+  DirectionsCar,
+} from "@mui/icons-material";
+import {
+  Order,
+  OrderStatus,
+} from "@/features/dashboarduser/orders/types/orderTypes";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+const statusConfig: Record<
+  OrderStatus,
+  { color: "warning" | "info" | "success" | "error"; text: string; icon: any }
+> = {
+  pending: { color: "warning", text: "Pendiente", icon: Pending },
+  in_transit: { color: "info", text: "En tránsito", icon: DirectionsCar },
+  delivered: { color: "success", text: "Entregado", icon: CheckCircle },
+};
 
 const OrdersTable = ({ orders }: { orders: Order[] }) => {
+  const router = useRouter();
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="orders table">
@@ -38,15 +59,43 @@ const OrdersTable = ({ orders }: { orders: Order[] }) => {
               <TableCell>{order.destinationCity}</TableCell>
               <TableCell align="right">{order.weight}</TableCell>
               <TableCell align="right">${order.basePrice}</TableCell>
-              <TableCell>{order.status}</TableCell>
-
+              <TableCell>
+                {(() => {
+                  const config =
+                    statusConfig[order.status as OrderStatus] || {};
+                  const IconComponent = config.icon || Pending;
+                  return (
+                    <Chip
+                      label={config.text || order.status}
+                      color={config.color as any}
+                      size="small"
+                      icon={<IconComponent fontSize="small" />}
+                      sx={{ fontWeight: 500 }}
+                    />
+                  );
+                })()}
+              </TableCell>
               <TableCell>
                 {new Date(order.createdAt).toLocaleDateString()}
               </TableCell>
               <TableCell>
-                <Link prefetch href={`/orders/${order.id}`}>
+                <Button
+                  onClick={() => {
+                    router.push(`/orders/${order.id}`);
+                  }}
+                  component="a"
+                  variant="contained"
+                  size="small"
+                  startIcon={<Visibility />}
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: 2,
+                    minWidth: "auto",
+                    px: 2,
+                  }}
+                >
                   Ver
-                </Link>
+                </Button>
               </TableCell>
             </TableRow>
           ))}
