@@ -74,7 +74,7 @@ const StateOfOrder = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Estado de la Orden
+        Estado de la Orden (POLLING)
       </Typography>
 
       <Card sx={{ mb: 3 }}>
