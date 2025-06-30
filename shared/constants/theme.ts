@@ -9,7 +9,7 @@ export const THEME_COLORS = {
 
 export const THEME_CONFIG = {
   typography: {
-    fontFamily: "inherit",
+    fontFamily: "var(--font-roboto), Roboto, Arial, sans-serif",
   },
   components: {
     MuiContainer: {
@@ -29,6 +29,9 @@ export const TOOLPAD_THEME_CONFIG = {
     colorSchemeSelector: "data-toolpad-color-scheme",
   },
   ...THEME_CONFIG,
+  typography: {
+    fontFamily: "var(--font-roboto), Roboto, Arial, sans-serif",
+  },
   breakpoints: {
     values: {
       xs: 0,
