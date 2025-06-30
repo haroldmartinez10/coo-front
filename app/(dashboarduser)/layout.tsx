@@ -118,9 +118,7 @@ export default function RootLayout({
       authentication={AUTHENTICATION}
       session={{ user: { name: user || "" } }}
     >
-      <DashboardLayout>
-        <div className="p-4">{children}</div>
-      </DashboardLayout>
+      <DashboardLayout>{children}</DashboardLayout>
     </AppProvider>
   );
 }

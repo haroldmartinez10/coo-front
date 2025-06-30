@@ -15,7 +15,7 @@ export const AuthProvider = ({ session, children }: IAuthProviderProps) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (session && session.user) {
+    if (session) {
       dispatch(
         login({
           token: session?.accessToken,
@@ -25,7 +25,7 @@ export const AuthProvider = ({ session, children }: IAuthProviderProps) => {
     } else {
       dispatch(logout());
     }
-  }, [session, dispatch]);
+  }, [session]);
 
   return <>{children}</>;
 };

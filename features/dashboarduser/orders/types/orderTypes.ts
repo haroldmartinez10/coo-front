@@ -50,14 +50,22 @@ export interface OrderResponseCreate {
   };
 }
 
+export type OrderStatus = "pending" | "in_transit" | "delivered";
+
 export type OrderStatusHistory = {
   id: number;
-  status: string;
+  status: OrderStatus;
   changed_at: string;
   notes: string;
 };
 
-export type OrderStatus = "pending" | "in_transit" | "delivered";
+export type StatusConfig = {
+  [K in OrderStatus]: {
+    color: "warning" | "info" | "success" | "error";
+    text: string;
+    icon: any;
+  };
+};
 
 export type OrderStatusHistoryBody = {
   status: OrderStatus;
