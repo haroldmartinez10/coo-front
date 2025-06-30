@@ -1,7 +1,9 @@
+"use client";
+import StateOfOrder from "@/features/dashboarduser/state-of-order/components/StateOfOrder";
 import React from "react";
 
 const Page = () => {
-  return <div className="p-4">page</div>;
+  return <StateOfOrder />;
 };
 
 export default Page;

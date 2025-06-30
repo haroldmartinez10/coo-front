@@ -7,6 +7,9 @@ const useGetOrderTracking = (trackingCode: string) => {
   return useQuery({
     queryKey: [ORDER_QUERY_KEYS.ORDER_TRACKING],
     queryFn: () => orderServices.orderTracking(trackingCode),
+
+    enabled: !!trackingCode,
+    refetchInterval: 5000,
   });
 };
 

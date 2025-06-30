@@ -35,7 +35,7 @@ const NAVIGATION: Navigation = [
   },
   {
     segment: "state-of-order",
-    title: "Estado de mi orden",
+    title: "Estado actual de mi orden",
     icon: <Map />,
     pattern: "state-of-order{/:id}*",
   },

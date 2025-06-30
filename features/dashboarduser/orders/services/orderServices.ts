@@ -38,9 +38,7 @@ const orderServices = {
   orderTracking: async (
     trackingCode: string
   ): Promise<OrderTrackingResponse> => {
-    const response = await axiosInstance.get(
-      `/orders/tracking/${trackingCode}`
-    );
+    const response = await axiosInstance.get(`/tracking/${trackingCode}`);
     return response.data;
   },
 };
