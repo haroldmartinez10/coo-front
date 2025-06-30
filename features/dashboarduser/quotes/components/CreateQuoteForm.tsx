@@ -15,10 +15,12 @@ import {
   InputLabel,
   FormHelperText,
 } from "@mui/material";
-import { useCreateQuote } from "../mutations/useCreateQuote";
-import { QuoteBody } from "../types/quoteTypes";
-import { QuoteSchema } from "../schemas/QuoteSchema";
+import { useCreateQuote } from "@/features/dashboarduser/quotes/mutations/useCreateQuote";
+import { QuoteBody } from "@/features/dashboarduser/quotes/types/quoteTypes";
+import { QuoteSchema } from "@/features/dashboarduser/quotes/schemas/QuoteSchema";
 import { ErrorResponse } from "@/shared/types/ErrorResponse";
+import { useCreateOrder } from "@/features/dashboarduser/orders/mutations/useCreateOrder";
+import { OrderBody } from "@/features/dashboarduser/orders/types/orderTypes";
 
 const CITIES = ["Bogotá", "Medellín", "Cali", "Barranquilla"];
 
@@ -49,6 +51,8 @@ const CitySelect = ({ name, label }: { name: string; label: string }) => (
 const CreateQuoteForm = () => {
   const [quoteCurrentPrice, setQuoteCurrentPrice] = useState(0);
   const { createQuoteAsync, isPending } = useCreateQuote();
+  const { createOrderAsync, isPending: isPendingCreateOrder } =
+    useCreateOrder();
 
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
@@ -62,15 +66,29 @@ const CreateQuoteForm = () => {
     length: 0,
   };
 
-  const handleCreateOrder = async (values: QuoteBody) => {};
+  const handleCreateOrder = async (values: OrderBody) => {
+    const response = await createOrderAsync({
+      body: { ...values, basePrice: quoteCurrentPrice },
+    });
+  };
+
+  const handleResetCotization = () => {
+    setQuoteCurrentPrice(0);
+    setSubmitError("");
+    setSubmitSuccess("");
+  };
 
   const handleSubmit = async (values: QuoteBody) => {
+    if (quoteCurrentPrice > 0) {
+      await handleCreateOrder(values as OrderBody);
+      return;
+    }
     try {
       setSubmitError("");
       setSubmitSuccess("");
       const response = await createQuoteAsync({ body: values });
 
-      setQuoteCurrentPrice(response.quote.price);
+      setQuoteCurrentPrice(response?.quote?.price);
       setSubmitSuccess("¡Cotización creada exitosamente!");
     } catch (error) {
       const errorResponse = error as ErrorResponse;
@@ -80,6 +98,10 @@ const CreateQuoteForm = () => {
       );
     }
   };
+
+  const textOfActionButton = !quoteCurrentPrice
+    ? "Crear Cotización"
+    : "Crear Orden";
 
   return (
     <Container component="main">
@@ -93,14 +115,7 @@ const CreateQuoteForm = () => {
           validationSchema={QuoteSchema}
           onSubmit={handleSubmit}
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            isSubmitting,
-          }) => (
+          {({ errors, touched, isSubmitting }) => (
             <Form>
               <Stack
                 direction={{ xs: "column", sm: "row" }}
@@ -112,6 +127,7 @@ const CreateQuoteForm = () => {
               </Stack>
 
               <Field
+                disabled={quoteCurrentPrice > 0}
                 as={TextField}
                 fullWidth
                 name="weight"
@@ -130,6 +146,7 @@ const CreateQuoteForm = () => {
               >
                 {["height", "width", "length"].map((field) => (
                   <Field
+                    disabled={quoteCurrentPrice > 0}
                     key={field}
                     as={TextField}
                     fullWidth
@@ -167,8 +184,20 @@ const CreateQuoteForm = () => {
                 disabled={isSubmitting || isPending}
                 sx={{ py: 1.5 }}
               >
-                {isSubmitting || isPending ? "Creando..." : "Crear Cotización"}
+                {textOfActionButton}
               </Button>
+
+              {quoteCurrentPrice > 0 && (
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  onClick={handleResetCotization}
+                  sx={{ py: 1.5, mt: 2, backgroundColor: "#000" }}
+                >
+                  Realizar otra cotización
+                </Button>
+              )}
             </Form>
           )}
         </Formik>

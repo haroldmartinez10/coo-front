@@ -2,16 +2,16 @@ import { useMutation } from "@tanstack/react-query";
 
 import { MutationOptions } from "@/shared/types/mutationTypes";
 
-import { QuoteBody } from "@/features/dashboarduser/quotes/types/quoteTypes";
-import quotesService from "../../quotes/services/quoteServices";
+import orderServices from "../services/orderServices";
+import { OrderBody } from "../types/orderTypes";
 
 export const useCreateOrder = ({
   onSuccess,
   onError,
 }: MutationOptions = {}) => {
   const mutation = useMutation({
-    mutationFn: ({ body }: { body: QuoteBody }) =>
-      quotesService.createQuote(body),
+    mutationFn: ({ body }: { body: OrderBody }) =>
+      orderServices.createOrder(body),
     onSuccess: (data) => {
       if (onSuccess) {
         onSuccess(data);
@@ -28,8 +28,8 @@ export const useCreateOrder = ({
     mutation;
 
   return {
-    createQuote: mutate,
-    createQuoteAsync: mutateAsync,
+    createOrder: mutate,
+    createOrderAsync: mutateAsync,
     isPending,
     isSuccess,
     isError,
