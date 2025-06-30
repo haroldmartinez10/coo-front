@@ -94,10 +94,10 @@ const CreateQuoteForm = () => {
       setSubmitSuccess("");
       const response = await createQuoteAsync({ body: values });
 
-      setQuoteCurrentPrice(response?.quote?.price);
+      setQuoteCurrentPrice(response?.data?.price);
       setSubmitSuccess(
         `Cotización creada exitosamente por valor de ${formatCop.format(
-          response?.quote?.price
+          response?.data?.price
         )} `
       );
     } catch (error) {

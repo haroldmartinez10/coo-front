@@ -21,8 +21,9 @@ export interface QuoteResponse {
 }
 
 export type QuoteResponseCreate = {
+  success: boolean;
   message: string;
-  quote: {
+  data: {
     originCity: string;
     destinationCity: string;
     packageDetails: {
