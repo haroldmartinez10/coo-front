@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# COO Frontend
 
-## Getting Started
+Aplicación web frontend desarrollada con Next.js para el sistema COO .
 
-First, run the development server:
+## Características
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Autenticación con NextAuth
+- Dashboard de usuario con gestión de órdenes y cotizaciones
+- Seguimiento de estado de órdenes en tiempo real
+- Interfaz de usuario con Material-UI
+- Gestión de estado con Redux
+- Testing con Jest
+- Comunicación en tiempo real con Socket.IO
+
+## Requisitos previos
+
+- Node.js (versión 18 o superior)
+- npm o yarn
+
+## Variables de entorno
+
+Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variables:
+
+```
+# NextAuth Configuration
+AUTH_SECRET="KV3RJ1O7pJjut3xz38e5mgscoShFUfDkyPn7UfRwmvY="
+NEXTAUTH_URL="http://localhost:3001"
+
+# API Backend URL
+NEXT_PUBLIC_API_URL="http://localhost:3000"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Descripción de variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **AUTH_SECRET**: Clave secreta para NextAuth (ya generada por npx auth)
+- **NEXTAUTH_URL**: URL donde se ejecuta la aplicación frontend
+- **NEXT_PUBLIC_API_URL**: URL del servidor backend/API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Instalación
 
-## Learn More
+1. Clona el repositorio
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Configura las variables de entorno (ver sección anterior)
+4. Ejecuta el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+La aplicación estará disponible en http://localhost:3001
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts disponibles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run dev` - Ejecuta el servidor de desarrollo en puerto 3001
+- `npm run build` - Construye la aplicación para producción
+- `npm run start` - Ejecuta la aplicación en modo producción en puerto 3001
+- `npm run lint` - Ejecuta el linter
+- `npm run test` - Ejecuta las pruebas
+- `npm run test:watch` - Ejecuta las pruebas en modo watch
 
-## Deploy on Vercel
+## Estructura del proyecto
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+├── app/                    # App Router de Next.js
+├── features/              # Características por módulos
+│   ├── auth/             # Autenticación (login/register)
+│   └── dashboarduser/    # Dashboard del usuario
+├── shared/               # Componentes y utilidades compartidas
+├── services/             # Configuración de servicios (axios)
+└── public/               # Archivos estáticos
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Funcionalidades
+
+### Autenticación
+
+- Login y registro de usuarios
+- Protección de rutas con middleware
+- Sesiones JWT con NextAuth
+
+### Dashboard de Usuario
+
+- **Órdenes**: Crear, visualizar y gestionar órdenes
+- **Cotizaciones**: Solicitar y gestionar cotizaciones
+- **Estado de órdenes**: Seguimiento en tiempo real
+
+### Tecnologías utilizadas
+
+- Next.js 15
+- React 19
+- NextAuth 5
+- Material-UI (MUI)
+- Redux Toolkit
+- React Query (TanStack Query)
+- Socket.IO Client
+- Formik + Yup
+- Jest + Testing Library
+- TypeScript
+
+## Desarrollo
+
+El proyecto utiliza:
+
+- TypeScript para tipado estático
+- ESLint para linting
+- Jest para testing
+- Tailwind CSS para estilos adicionales
+
+## Notas importantes
+
+- El puerto por defecto es 3001 (configurable en scripts)
+- La aplicación requiere conexión con un backend API
+- NextAuth está configurado con estrategia JWT
+- Se incluye comunicación en tiempo real con WebSockets
