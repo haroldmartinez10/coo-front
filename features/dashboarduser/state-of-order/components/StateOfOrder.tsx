@@ -28,7 +28,7 @@ const StateOfOrder = () => {
   );
 
   const isValidCode = useMemo(
-    () => trackingCode.trim().length >= 10,
+    () => trackingCode.trim().length >= 9,
     [trackingCode]
   );
   const { data, isLoading, error } = useGetOrderTracking(
@@ -69,7 +69,7 @@ const StateOfOrder = () => {
     if (value.trim().length === 0) {
       setDisplayData(null);
       setSearchAttempted(false);
-    } else if (value.trim().length >= 10) {
+    } else if (value.trim().length >= 9) {
       setSearchAttempted(true);
     }
   };
@@ -89,8 +89,8 @@ const StateOfOrder = () => {
   const getHelperText = () => {
     if (!trackingCode.trim())
       return "Ingresa tu código de seguimiento para ver el estado de tu orden";
-    if (trackingCode.trim().length < 10)
-      return "El código debe tener al menos 10 caracteres (Ej: COO-20250630-NK6R30)";
+    if (trackingCode.trim().length < 9)
+      return "El código debe tener al menos 9 caracteres (Ej: COO-74212)";
     if (shouldShow.loading) return "Buscando información de la orden...";
     if (shouldShow.error)
       return "Código no encontrado. Verifica que sea correcto.";
@@ -121,14 +121,13 @@ const StateOfOrder = () => {
           <TextField
             fullWidth
             label="Código de seguimiento"
-            placeholder="Ej: COO-20250630-NK6R30"
+            placeholder="Ej: COO-74212"
             value={trackingCode}
             onChange={(e) => handleChange(e.target.value)}
             helperText={getHelperText()}
             error={
               shouldShow.error ||
-              (trackingCode.trim().length > 0 &&
-                trackingCode.trim().length < 10)
+              (trackingCode.trim().length > 0 && trackingCode.trim().length < 9)
             }
             color={
               shouldShow.error
